@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<style>
+
+    .active-btn {
+        font-weight: bold;
+        background: green;
+        border: 1px solid green;
+        color: white;
+    }
+
+    .active-btn:hover {
+        background: #00a400;
+        cursor: pointer;
+    }
+
+</style>
+
+<body>
+
+<h1>Counter: <span id="counter">0</span></h1>
+
+<div style="width: 1000px; height: 500px; display: flex; align-items: center">
+
+    <div>
+        <button
+                id="start-button"
+                class="active-btn"
+                onclick="startTest()"
+                style="width: 100px;"
+        >Start
+        </button>
+    </div>
+    <div style="width: 800px;"></div>
+    <div>
+        <button
+                id="stop-button"
+                onclick="stopTest()"
+                style="width: 100px;"
+                disabled
+        >Stop
+        </button>
+    </div>
+
+</div>
+
+<script
+        src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"
+></script>
+
+<script>
+
+    let started = false;
+    let data = [];
+    let collectedData = [];
+
+    $("body").mousemove(function (e) {
+        if (started) {
+            data.push(e.pageY)
+        }
+    });
+
+    function setCounter() {
+        document.getElementById("counter").innerHTML = collectedData.length
+    }
+
+    function startTest() {
+        started = true;
+        document.getElementById("start-button").disabled = true;
+        document.getElementById("stop-button").disabled = false;
+        toggleActive()
+    }
+
+    function toggleActive() {
+        $("#start-button").toggleClass("active-btn");
+        $("#stop-button").toggleClass("active-btn");
+    }
+
+    function stopTest() {
+        if (started) {
+            started = false;
+            console.log(data);
+            collectedData.push(data);
+            data = [];
+            document.getElementById("start-button").disabled = false;
+            document.getElementById("stop-button").disabled = true;
+            toggleActive();
+            setCounter()
+        }
+    }
+
+    function convertToCSV(objArray) {
+        var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+        var str = '';
+
+        for (var i = 0; i < array.length; i++) {
+            var line = '';
+            for (var index in array[i]) {
+                if (line != '') line += ','
+
+                line += array[i][index];
+            }
+
+            str += line + '\r\n';
+        }
+
+        return str;
+    }
+
+    function exportCSVFile(items, fileTitle) {
+
+        // Convert Object to JSON
+        var jsonObject = JSON.stringify(items);
+
+        var csv = this.convertToCSV(jsonObject);
+
+        var exportedFilenmae = fileTitle + '.csv' || 'export.csv';
+
+        var blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+        if (navigator.msSaveBlob) { // IE 10+
+            navigator.msSaveBlob(blob, exportedFilenmae);
+        } else {
+            var link = document.createElement("a");
+            if (link.download !== undefined) { // feature detection
+                // Browsers that support HTML5 download attribute
+                var url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", exportedFilenmae);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+    }
+
+</script>
+
+</body>
+</html>
