@@ -24,6 +24,13 @@
 <body>
 
 <h1>Counter: <span id="counter">0</span></h1>
+<div>
+    <input type="text" id="user-name" placeholder="User name">
+    <button
+            onclick="exportCSVFile()"
+            id="export-btn"
+    >Export</button>
+</div>
 
 <div style="width: 1000px; height: 500px; display: flex; align-items: center">
 
@@ -114,8 +121,9 @@
         return str;
     }
 
-    // use this function in console to export collected data
-    function exportCSVFile(fileTitle) {
+    function exportCSVFile() {
+
+        let fileTitle = document.getElementById("user-name").value;
 
         // Convert Object to JSON
         let jsonObject = JSON.stringify(collectedData);
